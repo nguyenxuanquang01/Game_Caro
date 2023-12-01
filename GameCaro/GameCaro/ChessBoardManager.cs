@@ -18,6 +18,7 @@ namespace GameCaro
         public TextBox PlayerName { get => playerName; set => playerName = value; }
         public PictureBox PlayerMark { get => playerMark; set => playerMark = value; }
         public List<List<Button>> Matrix { get => matrix; set => matrix = value; }
+        public Stack<PlayerHistory> StackAction { get; set; }
 
         private List<Player> playerList;
 
@@ -65,6 +66,8 @@ namespace GameCaro
             chessBoar.Enabled = true;
             chessBoar.Controls.Clear();
 
+            StackAction = new Stack<PlayerHistory>();
+
             CurrentPlayer = 0;
             changePlayer();
 
@@ -107,6 +110,10 @@ namespace GameCaro
 
             mark(btn);
 
+            StackAction.Push(new PlayerHistory(getChessPoint(btn),currentPlayer));
+
+            CurrentPlayer = CurrentPlayer == 0 ? 1 : 0;
+
             changePlayer();
 
             if (playerMarked != null)
@@ -126,6 +133,27 @@ namespace GameCaro
             {
                 endedGame(this, new EventArgs());
             }
+        }
+
+        public bool Undo()
+        {
+            if(StackAction.Count <= 0)
+            {
+                return false;
+            }
+
+            PlayerHistory player = StackAction.Pop();
+
+            Point point = player.Point;
+
+            Button btn = Matrix[point.Y][point.X];
+            btn.BackgroundImage = null;
+
+            CurrentPlayer = player.CurentIndex;
+
+            changePlayer();
+
+            return true;
         }
 
         private bool isEndGame(Button btn)
@@ -298,7 +326,7 @@ namespace GameCaro
         {
             b.BackgroundImage = playerList[CurrentPlayer].Mark;
 
-            CurrentPlayer = CurrentPlayer == 0 ? 1 : 0;
+            
         }
 
         public void changePlayer()

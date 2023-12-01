@@ -26,6 +26,7 @@ namespace GameCaro
 
         private void NewGame()
         {
+            undoToolStripMenuItem.Enabled = true;
             CountDown.Value = 0;
             tmCountDown.Stop();
             boardManager.DrawChessBoard();
@@ -34,7 +35,7 @@ namespace GameCaro
 
         private void Undo()
         {
-
+            boardManager.Undo();
         }
 
         private void Quit()
@@ -46,6 +47,7 @@ namespace GameCaro
         {
             tmCountDown.Stop();
             pnlChessboard.Enabled = false;
+            undoToolStripMenuItem.Enabled = false;
             MessageBox.Show("Ket thuc");
         }
 

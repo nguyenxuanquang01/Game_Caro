@@ -111,6 +111,7 @@
             btnLAN.TabIndex = 4;
             btnLAN.Text = "LAN";
             btnLAN.UseVisualStyleBackColor = true;
+            btnLAN.Click += btnLAN_Click;
             // 
             // ptrbMark
             // 
@@ -169,7 +170,7 @@
             // 
             newGameToolStripMenuItem.Name = "newGameToolStripMenuItem";
             newGameToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.N;
-            newGameToolStripMenuItem.Size = new Size(224, 26);
+            newGameToolStripMenuItem.Size = new Size(218, 26);
             newGameToolStripMenuItem.Text = "New Game";
             newGameToolStripMenuItem.Click += newGameToolStripMenuItem_Click;
             // 
@@ -177,7 +178,7 @@
             // 
             undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             undoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Z;
-            undoToolStripMenuItem.Size = new Size(224, 26);
+            undoToolStripMenuItem.Size = new Size(218, 26);
             undoToolStripMenuItem.Text = "Undo";
             undoToolStripMenuItem.Click += undoToolStripMenuItem_Click;
             // 
@@ -185,7 +186,7 @@
             // 
             quitToolStripMenuItem.Name = "quitToolStripMenuItem";
             quitToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Q;
-            quitToolStripMenuItem.Size = new Size(224, 26);
+            quitToolStripMenuItem.Size = new Size(218, 26);
             quitToolStripMenuItem.Text = "Quit";
             quitToolStripMenuItem.Click += quitToolStripMenuItem_Click;
             // 
@@ -203,6 +204,7 @@
             Name = "Form1";
             Text = "Caro LAN";
             FormClosing += Form1_FormClosing;
+            Shown += Form1_Shown;
             panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)ptbAvatar).EndInit();
             panel3.ResumeLayout(false);

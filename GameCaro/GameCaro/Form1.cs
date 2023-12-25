@@ -1,3 +1,5 @@
+using Microsoft.VisualBasic.Devices;
+using System.Net.NetworkInformation;
 using System.Security.Cryptography.Xml;
 
 namespace GameCaro
@@ -7,6 +9,7 @@ namespace GameCaro
 
         #region properties
         ChessBoardManager boardManager;
+        SocketMangager socket;
         #endregion
         public Form1()
         {
@@ -21,6 +24,8 @@ namespace GameCaro
 
             tmCountDown.Interval = Cons.COUNT_DOWN_INTERVAL;
 
+            socket = new SocketMangager();
+
             NewGame();
         }
 
@@ -30,7 +35,7 @@ namespace GameCaro
             CountDown.Value = 0;
             tmCountDown.Stop();
             boardManager.DrawChessBoard();
-            
+
         }
 
         private void Undo()
@@ -56,10 +61,14 @@ namespace GameCaro
             EndGame();
         }
 
-        private void BoardManager_PlayerMarked(object? sender, EventArgs e)
+        private void BoardManager_PlayerMarked(object? sender, ButtonClickEvent e)
         {
             tmCountDown.Start();
             CountDown.Value = 0;
+
+            socket.Send(new SocketData((int) SocketCommand.SEND_POINT, "", e.ClickPoint));
+
+            Listen();
         }
 
         private void tmCoundDown_Tick(object sender, EventArgs e)
@@ -88,10 +97,78 @@ namespace GameCaro
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-           if(MessageBox.Show("b co muon dong khong","Thong bao", MessageBoxButtons.OKCancel) != System.Windows.Forms.DialogResult.OK)
+            if (MessageBox.Show("b co muon dong khong", "Thong bao", MessageBoxButtons.OKCancel) != System.Windows.Forms.DialogResult.OK)
             {
                 e.Cancel = true;
             }
+        }
+
+        private void btnLAN_Click(object sender, EventArgs e)
+        {
+            socket.IP = txtbIP.Text;
+
+            if (!socket.ConnectServer())
+            {
+                socket.CreateServer();
+            }
+            else
+            {
+                Listen();
+            }
+            
+        }
+
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            txtbIP.Text = socket.GetLocalIPv4(NetworkInterfaceType.Wireless80211);
+
+            if (string.IsNullOrEmpty(txtbIP.Text))
+            {
+                txtbIP.Text = socket.GetLocalIPv4(NetworkInterfaceType.Ethernet);
+            }
+        }
+
+        void Listen()
+        {
+
+            try
+            {
+                Thread thread = new Thread(() =>
+                {
+                    SocketData data = (SocketData)socket.Receive();
+
+                    ProcessData(data);
+                });
+                thread.IsBackground = true;
+                thread.Start();
+            }
+            catch
+            {
+
+            }
+        }
+
+        private void ProcessData(SocketData data)
+        {
+            switch (data.Command)
+            {
+                case (int)SocketCommand.NOTITY:
+                    MessageBox.Show(data.Message); 
+                    break;
+                case (int)SocketCommand.UNDO: 
+                    break;
+                case(int)SocketCommand.NEW_GAME: 
+                    break;
+                case(int)SocketCommand.SEND_POINT:
+                    boardManager.otherPlayerMark(data.Point);
+                    break;
+                case(int)SocketCommand.QUIT: 
+                    break;
+                default: 
+                    break;
+              
+            }
+            Listen();
         }
     }
 }
